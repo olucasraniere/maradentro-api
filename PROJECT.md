@@ -304,3 +304,90 @@ docker compose ps
 Deve aparecer o container `maradentro_db` com status running.
 
 O comando `docker compose up -d` irá executar o contêiner indefinidamente em segundo plano. Para pará-lo, basta executar o comando `docker compose down`.
+
+**💡 GIT - HORA DO COMMIT**
+
+```bash
+git add docker-compose.yml .env.example
+```
+
+```bash
+git commit -m "chore(docker): add PostgreSQL container configuration
+
+- Add docker-compose.yml with PostgreSQL 16 alpine
+- Use environment variables for database credentials
+- Add named volume for data persistence
+- Add dedicated network for service isolation
+- Update .env.example with PostgreSQL variables"
+```
+
+```bash
+ git push -u origin main
+```
+
+## Prisma ORM
+
+Instale as dependências:
+
+```bash
+pnpm add @prisma/client @prisma/config
+pnpm add -D prisma dotenv
+```
+
+Inicialize o Prisma:
+
+```bash
+pnpm prisma init
+```
+
+Esse comando vai criar algumas coisas:
+
+- A pasta `prisma/` com o arquivo schema.prisma
+- Uma variável `DATABASE_URL` no `.env`
+- O arquivo `prisma.config.ts`
+
+Ajuste o `schema.prisma`, removendo a linha `output` e `url`
+
+```prisma
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+```
+
+Teste a conexão com o banco de dados rodando o migrate:
+
+```bash
+pnpm prisma migrate dev --name init
+```
+
+Esse comando vai:
+
+1. Conectar ao banco usando a `DATABASE_URL` do `.env`
+2. Criar o banco `maradentro_db` se não existir
+3. Criar a pasta `prisma/migrations`
+4. Aplicar a migration inicial
+
+💡 Como schema.prisma ainda não tem nenhum model, a migration vai ser vazia — e tudo bem! O objetivo agora é apenas confirmar que a conexão com o PostgreSQL no Docker está funcionando.
+
+**💡 GIT - HORA DO COMMIT**
+
+```bash
+git add prisma/ prisma.config.ts .env.example
+```
+
+```bash
+git commit -m "chore(prisma): initialize Prisma ORM with PostgreSQL
+
+- Initialize Prisma 7 with prisma.config.ts
+- Configure schema.prisma with PostgreSQL provider
+- Add prisma.config.ts with datasource and migrations config
+- Add dotenv for environment variable loading"
+```
+
+```bash
+ git push -u origin main
+```
